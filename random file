@@ -1,0 +1,39 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+FILE*fp;
+fp=fopen("C:\\dsa\\stack_file.txt","w");
+int n,temp,a[20],N,M;
+printf("Enter the starting value=");
+scanf("%d",&N);
+printf("Enter the end value=");
+scanf("%d",&M);
+
+for(n=0;n<10;n++)
+{
+    temp=rand()%M;
+    if(temp<N)
+    {
+        temp=temp+N;
+        if(temp>M)
+        {
+            temp=temp+N-M;
+        }
+    }
+
+    a[n]=temp;
+    fscanf(fp,"%d",&a[n]);
+    fprintf(fp,"%d",a[n]);
+
+}
+
+fclose(fp);
+
+for(n=0;n<10;n++)
+{
+
+    printf("%d\t",a[n]);
+}
+}
