@@ -1,0 +1,85 @@
+#include<stdio.h>
+#include<stdlib.h>
+void input(FILE *fp,int n);
+void output(FILE *fp,int n);
+void sort(FILE *fp,int n);
+int a[20];
+
+int main()
+{
+int n;
+FILE *fp;
+printf("Enter the size of array=\t");
+scanf("%d",&n);
+input(fp,n);
+output(fp,n);
+printf("Sorted output=\n");
+sort(fp,n);
+return 0;
+}
+
+void input(FILE *fp,int n)
+{
+fp=fopen("input.txt","w");
+if(fp==NULL)
+{
+    printf("file not created");
+    exit (0);
+}
+int temp;
+for(int i=0;i<n;i++)
+{
+    scanf("%d",&temp);
+    fprintf(fp,"%d ",temp);
+}
+fclose(fp);
+}
+
+void output(FILE *fp,int n)
+{
+fp=fopen("input.txt","r");
+int temp;
+for(int i=0;i<n;i++)
+{
+    fscanf(fp,"%d",&a[i]);
+}
+fclose(fp);
+printf("\n\n");
+for(int i=0;i<n;i++)
+ {
+     printf("%d\t",a[i]);
+ }
+ printf("\n\n");
+
+
+}
+
+
+
+void sort(FILE *fp,int n)
+{
+    fp=fopen("output.txt","r");
+
+     int i,j,t;
+
+
+    for(i=0;i<n-1;i++)
+    {
+        for(j=0;j<n-i-1;j++)
+        {
+            if(a[j]>a[j+1])
+            {
+            t=a[j];
+            a[j]=a[j+1];
+            a[j+1]=t;
+        }
+
+    }
+
+    }
+    for(int i=0;i<n;i++)
+ {
+     printf("%d\t",a[i]);
+     fprintf(fp,"%d",a[i]);
+ }
+}
