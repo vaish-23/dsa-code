@@ -1,0 +1,105 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define size 100
+int stack[size],top=-1;
+void push(int value)
+{
+    if(top==size-1)
+    {
+        printf("stack is full");
+    }
+    else
+    {
+        top++;
+        stack[top]=value;
+    }
+}
+int pop()
+{
+    int num;
+    if(top==-1)
+    {
+        return 0;
+    }
+    else
+    {
+        num=stack[top];
+        top--;
+
+    }
+    return num;
+}
+int main()
+{
+    int i;
+    FILE*fp;
+    fp=fopen("C:\\dsa\\second_question\\random.txt","w");
+    int n,temp,a[20],N,M;
+    printf("Enter the starting value=");
+    scanf("%d",&N);
+    printf("Enter the end value=");
+    scanf("%d",&M);
+    printf("Enter the size of random inputs");
+    scanf("%d",&i);
+    for(n=0; n<i; n++)
+    {
+        temp=rand()%M;
+        if(temp<N)
+        {
+            temp=temp+N;
+            if(temp>M)
+            {
+                temp=temp+N-M;
+            }
+        }
+
+        a[n]=temp;
+        fscanf(fp,"%d",&a[n]);
+        fprintf(fp,"%d\n",a[n]);
+
+    }
+    fclose(fp);
+    fp=fopen("C:\\dsa\\second_question\\random.txt","r");
+    for(n=0; n<i; n++)
+    {
+        fscanf(fp,"%d",&a[n]);
+        push(a[n]);
+        printf("%d\t",a[n]);
+    }
+
+    FILE*fps;
+    FILE*po;
+    int ch,num;
+    printf("Enter the choice:");
+
+
+    while(1)
+    {
+        scanf("%d",&ch);
+        switch(ch)
+        {
+        case 1:
+            fps=fopen("C:\\dsa\\second_question\\push.txt","a");
+
+            num=pop();
+            printf("%d",num);
+            fprintf(fps,"%d\n",num);
+            fclose(fps);
+            break;
+
+        case 2:
+            po=fopen("C:\\dsa\\second_question\\pop.txt","a");
+            num=pop();
+            printf("%d\n",num);
+            fprintf(po,"%d\n",num);
+            fclose(po);
+            break;
+
+        default:
+            exit(0);
+
+
+        }
+    }
+    fclose(fp);
+}
