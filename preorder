@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define TABLE_SIZE 100
+#define MAX_KEY_LENGTH 50
+#define MAX_VALUE_LENGTH 100
+
+struct KeyValuePair {
+    char key[MAX_KEY_LENGTH];
+    char value[MAX_VALUE_LENGTH];
+};
+
+struct KeyValuePair* associativeArray[TABLE_SIZE];
+
+int hashFunction(const char* key) {
+    int hash = 0;
+    for (int i = 0; key[i] != '\0'; i++) {
+        hash = (hash + key[i]) % TABLE_SIZE;
+    }
+    return hash;
+}
+
+void insert(const char* key, const char* value) {
+    int index = hashFunction(key);
+    int collisions = 1;
+
+    while (associativeArray[index] != NULL) {
+        if (strcmp(associativeArray[index]->key, key) == 0) {
+            strcpy(associativeArray[index]->value, value);
+            return; // Key already exists, update the value
+        }
+        index = (index + collisions * collisions) % TABLE_SIZE;
+        collisions++;
+    }
+
+    struct KeyValuePair* newEntry = (struct KeyValuePair*)malloc(sizeof(struct KeyValuePair));
+    strcpy(newEntry->key, key);
+    strcpy(newEntry->value, value);
+    associativeArray[index] = newEntry;
+}
+
+const char* get(const char* key) {
+    int index = hashFunction(key);
+    int collisions = 1;
+
+    while (associativeArray[index] != NULL) {
+        if (strcmp(associativeArray[index]->key, key) == 0) {
+            return associativeArray[index]->value;
+        }
+        index = (index + collisions * collisions) % TABLE_SIZE;
+        collisions++;
+    }
+
+    return NULL; // Key not found in the associative array
+}
+
+int main() {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        associativeArray[i] = NULL;
+    }
+
+    insert("name", "John");
+    insert("age", "25");
+    insert("city", "New York");
+    insert("occupation", "Engineer");
+
+    char key[MAX_KEY_LENGTH];
+    printf("Enter a key to retrieve its value: ");
+    scanf("%s", key);
+
+    const char* value = get(key);
+    if (value != NULL) {
+        printf("Value for key '%s': %s\n", key, value);
+    } else {
+        printf("Key '%s' not found in the associative array.\n", key);
+    }
+
+    // Free allocated memory for the associative array entries
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        if (associativeArray[i] != NULL) {
+            free(associativeArray[i]);
+        }
+    }
+
+    return 0;
+}
