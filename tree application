@@ -1,0 +1,316 @@
+
+#include<stdlib.h>
+#include<stdio.h>
+
+struct Node
+{
+    int key;
+    struct Node *left;
+    struct Node *right;
+    int height;
+};
+
+int height(struct Node *N)
+{
+    if (N == NULL)
+        return 0;
+    return N->height;
+}
+
+
+int max(int a, int b)
+{
+    return (a > b)? a : b;
+}
+
+struct Node* newNode(int key)
+{
+    struct Node* node = (struct Node*)
+                        malloc(sizeof(struct Node));
+    node->key = key;
+    node->left = NULL;
+    node->right = NULL;
+    node->height = 1;
+    return(node);
+}
+
+struct Node *rightRotate(struct Node *y)
+{
+    struct Node *x = y->left;
+    struct Node *T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = max(height(y->left),
+                    height(y->right)) + 1;
+    x->height = max(height(x->left),
+                    height(x->right)) + 1;
+
+    return x;
+}
+
+struct Node *leftRotate(struct Node *x)
+{
+    struct Node *y = x->right;
+    struct Node *T2 = y->left;
+
+
+    y->left = x;
+    x->right = T2;
+
+
+    x->height = max(height(x->left),
+                    height(x->right)) + 1;
+    y->height = max(height(y->left),
+                    height(y->right)) + 1;
+
+
+    return y;
+}
+
+
+int getBalance(struct Node *N)
+{
+    if (N == NULL)
+        return 0;
+    return height(N->left) - height(N->right);
+}
+
+
+struct Node* insert(struct Node* node, int key)
+{
+
+    if (node == NULL)
+        return(newNode(key));
+
+    if (key < node->key)
+        node->left = insert(node->left, key);
+    else if (key > node->key)
+        node->right = insert(node->right, key);
+    else
+        return node;
+
+
+    node->height = 1 + max(height(node->left),
+                           height(node->right));
+
+
+    int balance = getBalance(node);
+
+    if (balance > 1 && key < node->left->key)
+        return rightRotate(node);
+
+
+    if (balance < -1 && key > node->right->key)
+        return leftRotate(node);
+
+
+    if (balance > 1 && key > node->left->key)
+    {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+
+
+    if (balance < -1 && key < node->right->key)
+    {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+
+    return node;
+}
+
+void preOrder(struct Node *root)
+{
+    FILE *pre;
+    pre=fopen("file//preorder.txt","a");
+    if(root != NULL)
+    {
+        printf("%d ", root->key);
+        fprintf(pre,"%d\t",root->key);
+        preOrder(root->left);
+        preOrder(root->right);
+    }
+    fclose(pre);
+}
+
+
+struct Node* find_minimum(struct Node * root)
+{
+    if (root == NULL)
+        return NULL;
+    else if (root -> left != NULL)
+        return find_minimum(root -> left);
+    return root;
+}
+
+struct Node* delete(struct Node * root, int x)
+{
+
+    if (root == NULL)
+        return NULL;
+    if (x > root -> key)
+        root -> right = delete(root -> right, x);
+    else if (x < root -> key)
+        root -> left= delete(root -> left, x);
+    else
+    {
+
+        if (root -> left == NULL && root -> right == NULL)
+        {
+            free(root);
+            return NULL;
+        }
+
+
+        else if (root -> left== NULL || root -> right == NULL)
+        {
+            struct Node *temp;
+            if (root -> left== NULL)
+                temp = root -> right;
+            else
+                temp = root -> left;
+            free(root);
+            return temp;
+        }
+
+
+        else
+        {
+            struct Node *temp = find_minimum(root -> right);
+            root -> key = temp -> key;
+            root -> right = delete(root -> right, temp -> key);
+        }
+    }
+    return root;
+}
+
+void postorder(struct Node * root)
+
+{
+    FILE *post;
+    post=fopen("file//postorder.txt","a");
+    if(root!=NULL)
+    {
+        postorder(root->left);
+        postorder(root->right);
+        printf("%d ",root->key);
+        fprintf(post,"%d\t",root->key);
+    }
+    fclose(post);
+}
+
+void inorder(struct Node * root)
+{
+
+    int temp;
+    FILE *in;
+    in=fopen("file//inorder.txt","a");
+    if(root!=NULL)
+    {
+        inorder(root->left);
+        printf("%d ",root->key);
+
+        temp=root->key;
+        fprintf(in,"%d\t",temp);
+        inorder(root->right);
+
+    }
+    fclose(in);
+
+}
+void projSearch(struct Node* root, int key)
+{
+    if (root == NULL)
+        printf("project %d not found\n",key);
+
+    else if (root->key == key)
+        printf("project %d found\n",key);
+
+    else if (root->key > key)
+    {
+        projSearch(root->left, key);
+    }
+
+    else
+    {
+        projSearch(root->right, key);
+    }
+}
+void printAVL(struct Node* root, int space)
+{
+    if (root == NULL)
+        return;
+
+    space += 10;
+
+    printAVL(root->right, space);
+
+    printf("\n");
+    for (int i = 10; i < space; i++)
+        printf(" ");
+    printf("%d < \n", root->key);
+
+    printAVL(root->left, space);
+}
+
+int main()
+{
+    struct Node *root = NULL;
+    int n,x,p,q,temp;
+    printf("Enter the number of nodes to be inserted\n");
+    scanf("%d",&n);
+    printf("Enter the range of the number\n");
+    scanf("%d%d",&p,&q);
+    q=q-p;
+    int arr[n];
+
+    for(int i=0; i<n ; i++)
+    {
+        temp=(rand()%q);
+        temp=temp+p;
+        arr[i]=temp;
+        root = insert(root, temp);
+        printf("%d\t", arr[i]);
+
+    }
+
+    int choice,id;
+    while(1)
+    {
+        printf("\nPostorder traversal of the patient Id is \n");
+        postorder(root);
+        printf("\n1.To insert a new Id\n 2.To delete a Id\n 3.Search the Id\n 4.form a tree visualization\n 5.exit\n");
+        scanf("%d",&choice);
+        if(choice==1)
+        {
+            printf("Enter the id need to be inserted\n");
+            scanf("%d",&id);
+            root = insert(root, id);
+        }
+        else if(choice==2)
+        {
+            printf("Enter the id need to be deleted\n");
+            scanf("%d",&id);
+            delete(root,id);
+        }
+        else if(choice==3)
+        {
+            printf("Enter the id need to be searched\n");
+            scanf("%d",&x);
+            projSearch(root,x);
+        }
+        else if(choice==4)
+        {
+            printAVL(root, 0);
+        }
+        else if(choice==5)
+        {
+            exit(0);
+        }
+    }
+    return 0;
+}
